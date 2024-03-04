@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Binary Search Tree</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+    }
+    #output {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Binary Search Tree</h1>
+  <div>
+    <label for="node-value">Node Value:</label>
+    <input type="number" id="node-value">
+    <button onclick="insertNode()">Insert Node</button>
+    <button onclick="deleteNode()">Delete Node</button>
+  </div>
+  <div id="output">
+    <h2>Binary Search Tree:</h2>
+    <pre id="bst-output"></pre>
+  </div>
+
+  <script>
+    // Node structure for Binary Search Tree
+    class Node {
+      constructor(value) {
+        this.value = value;
+        this.left = null;
+        this.right = null;
+      }
+    }
+
+    // Binary Search Tree class
+    class BST {
+      constructor() {
+        this.root = null;
+      }
+
+      // Method to insert a node into BST
+      insert(value) {
+        const newNode = new Node(value);
+        if (!this.root) {
+          this.root = newNode;
+        } else {
+          this.insertNode(this.root, newNode);
+        }
+      }
+
+      // Helper method for insertion
+      insertNode(node, newNode) {
+        if (newNode.value < node.value) {
+          if (!node.left) {
+            node.left = newNode;
+          } else {
+            this.insertNode(node.left, newNode);
+          }
+        } else {
+          if (!node.right) {
+            node.right = newNode;
+          } else {
+            this.insertNode(node.right, newNode);
+          }
+        }
+      }
+
+      // Method to delete a node from BST
+      delete(value) {
+        this.root = this.deleteNode(this.root, value);
+      }
+
+      // Helper method for deletion
+      deleteNode(node, value) {
+        if (!node) {
+          return null;
+        }
+
+        if (value < node.value) {
+          node.left = this.deleteNode(node.left, value);
+          return node;
+        } else if (value > node.value) {
+          node.right = this.deleteNode(node.right, value);
+          return node;
+        } else {
+          // If the node has no children
+          if (!node.left && !node.right) {
+            node = null;
+            return node;
+          }
+
+          // If the node has only one child
+          if (!node.left) {
+            node = node.right;
+            return node;
+          } else if (!node.right) {
+            node = node.left;
+            return node;
+          }
+
+          // If the node has two children
+          const temp = this.findMinNode(node.right);
+          node.value = temp.value;
+          node.right = this.deleteNode(node.right, temp.value);
+          return node;
+        }
+      }
+
+      // Method to find the minimum node in BST
+      findMinNode(node) {
+        while (node && node.left !== null) {
+          node = node.left;
+        }
+        return node;
+      }
+
+      // Method to get the root of BST
+      getRoot() {
+        return this.root;
+      }
+
+      // Method to print the BST
+      print(node, level = 0, side = 'Root') {
+        if (node !== null) {
+          let output = '';
+          for (let i = 0; i < level; i++) {
+            output += '---';
+          }
+          console.log(`${output}${side}: ${node.value}`);
+          document.getElementById('bst-output').textContent += `${output}${side}: ${node.value}\n`;
+          this.print(node.left, level + 1, 'L');
+          this.print(node.right, level + 1, 'R');
+        }
+      }
+    }
+
+    // Create a new instance of BST
+    const bst = new BST();
+
+    // Function to insert a node
+    function insertNode() {
+      const nodeValue = parseInt(document.getElementById('node-value').value);
+      if (!isNaN(nodeValue)) {
+        bst.insert(nodeValue);
+        refreshOutput();
+      } else {
+        alert('Please enter a valid number!');
+      }
+    }
+
+    // Function to delete a node
+    function deleteNode() {
+      const nodeValue = parseInt(document.getElementById('node-value').value);
+      if (!isNaN(nodeValue)) {
+        bst.delete(nodeValue);
+        refreshOutput();
+      } else {
+        alert('Please enter a valid number!');
+      }
+    }
+
+    // Function to refresh the output
+    function refreshOutput() {
+      const outputDiv = document.getElementById('bst-output');
+      outputDiv.textContent = '';
+      bst.print(bst.getRoot());
+    }
+
+  </script>
+</body>
+</html>
